@@ -1,0 +1,315 @@
+<!doctype html>
+<html
+  lang="en"
+  x-data="{ isDark: $persist(false)}"
+  :data-theme="`!!isDark ? 'dark' : 'light'`"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToDo List</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/combine/npm/daisyui@5/base/svg.css,npm/daisyui@5/base/rootscrollgutter.css,npm/daisyui@5/base/properties.css,npm/daisyui@5/base/scrollbar.css,npm/daisyui@5/base/rootscrolllock.css,npm/daisyui@5/base/reset.css,npm/daisyui@5/base/rootcolor.css,npm/daisyui@5/components/swap.css,npm/daisyui@5/components/card.css,npm/daisyui@5/components/button.css,npm/daisyui@5/components/checkbox.css,npm/daisyui@5/components/link.css,npm/daisyui@5/components/divider.css,npm/daisyui@5/components/input.css,npm/daisyui@5/components/radialprogress.css,npm/daisyui@5/utilities/join.css,npm/daisyui@5/colors/properties.css,npm/daisyui@5/theme/light.css,npm/daisyui@5/theme/dark.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"
+    ></script>
+  </head>
+
+  <body class="flex flex-col h-dvh bg-base-200">
+    <header class="flex justify-end p-4">
+      <label class="swap swap-rotate text-base-content">
+        <input
+          type="checkbox"
+          value="dark"
+          class="theme-controller"
+          x-model="isDark"
+        />
+
+        <svg
+          class="swap-off"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="currentColor"
+          viewBox="0 0 256 256"
+        >
+          <path
+            d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"
+          ></path>
+        </svg>
+        <svg
+          class="swap-on"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="currentColor"
+          viewBox="0 0 256 256"
+        >
+          <path
+            d="M233.54,142.23a8,8,0,0,0-8-2,88.08,88.08,0,0,1-109.8-109.8,8,8,0,0,0-10-10,104.84,104.84,0,0,0-52.91,37A104,104,0,0,0,136,224a103.09,103.09,0,0,0,62.52-20.88,104.84,104.84,0,0,0,37-52.91A8,8,0,0,0,233.54,142.23ZM188.9,190.34A88,88,0,0,1,65.66,67.11a89,89,0,0,1,31.4-26A106,106,0,0,0,96,56,104.11,104.11,0,0,0,200,160a106,106,0,0,0,14.92-1.06A89,89,0,0,1,188.9,190.34Z"
+          ></path>
+        </svg>
+      </label>
+    </header>
+    <main
+      class="flex items-center justify-center flex-1 min-h-0 overflow-hidden"
+      x-data="todoApp()"
+    >
+      <div class="card w-full max-w-md max-h-full bg-base-100 shadow-sm m-8">
+        <div class="card-body flex flex-col min-h-0">
+          <div class="flex justify-center m-4">
+            <div
+              x-ref="progress"
+              class="radial-progress text-success font-bold text-3xl text-center bg-base-200 shrink-0"
+              style="--size: 12rem; --thickness: 0.75rem"
+              :style="{ '--value': `${progress}` }"
+              :aria-valuenow="progress"
+              role="progressbar"
+              x-text="`${progress}%`"
+            ></div>
+          </div>
+
+          <div class="divider">
+            <h2 class="place-self-center text-2xl font-bold py-3">ToDo</h2>
+          </div>
+          <ol
+            class="flex flex-col gap-2 flex-1 min-h-1 overflow-y-auto min-h-30"
+          >
+            <div
+              x-cloak
+              x-show="tasks.length === 0"
+              class="flex flex-col items-center my-8"
+            >
+              <h3 class="font-semibold text-lg text-base-content">
+                Let's get things done!
+              </h3>
+              <p class="mt-2 text-sm text-base-content">
+                Add a new task to organize your day.
+              </p>
+            </div>
+            <template x-for="task in tasks" :key="task.id">
+              <li class="flex items-center gap-2 group relative join">
+                <div
+                  class="flex-1 min-w-0 pr-20 has-[:checked]:opacity-50 transition-all"
+                  x-show="!task.isEditing"
+                >
+                  <label class="flex items-center gap-2 w-full min-w-0 py-1">
+                    <input
+                      type="checkbox"
+                      class="checkbox peer shrink-0"
+                      x-model="task.done"
+                    />
+
+                    <span
+                      class="flex-1 min-w-0 break-words peer-checked:line-through"
+                      x-text="task.text"
+                    ></span>
+                  </label>
+                </div>
+
+                <input
+                  type="text"
+                  class="input input-sm flex-1 min-w-0 mr-18"
+                  x-model="task.text"
+                  x-show="task.isEditing"
+                />
+
+                <div
+                  class="absolute right-0 hidden group-hover:flex"
+                  :class="task.isEditing ? '!flex' : ''"
+                >
+                  <label
+                    class="my-auto btn btn-square btn-sm btn-ghost cursor-pointer shrink-0"
+                  >
+                    <input
+                      type="checkbox"
+                      x-model="task.isEditing"
+                      class="hidden"
+                    />
+                    <svg
+                      x-show="!task.isEditing"
+                      class="text-base-content/70"
+                      x-cloak
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="currentColor"
+                      viewBox="0 0 256 256"
+                    >
+                      <path
+                        d="M227.32,73.37,182.63,28.69a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H216a8,8,0,0,0,0-16H115.32l112-112A16,16,0,0,0,227.32,73.37ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.69,147.32,64l24-24L216,84.69Z"
+                      ></path>
+                    </svg>
+                    <svg
+                      x-show="task.isEditing"
+                      class="text-base-content/70"
+                      x-cloak
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="currentColor"
+                      viewBox="0 0 256 256"
+                    >
+                      <path
+                        d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"
+                      ></path>
+                    </svg>
+                  </label>
+                  <button
+                    class="btn btn-square btn-sm btn-ghost btn-error cursor-pointer shrink-0"
+                    @click="() => removeTask(task.id)"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="currentColor"
+                      viewBox="0 0 256 256"
+                    >
+                      <path
+                        d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </li>
+            </template>
+          </ol>
+
+          <form @submit.prevent="addTask()" class="flex items-center mt-4 join">
+            <input
+              type="text"
+              placeholder="Describe a task..."
+              class="input join-item"
+              x-model="newTask"
+            />
+            <button type="submit" class="btn btn-soft join-item">Add</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </body>
+
+  <footer class="flex items-center justify-center gap-3 mt-4">
+    <a
+      href="https://github.com/ngrab0wski/"
+      class="link link-hover text-xs opacity-60"
+      >Made with ❤️ by cats.</a
+    >
+    <div class="relative overflow-hidden size-6">
+      <svg
+        class="absolute -bottom-2.5"
+        viewBox="0 0 20 19"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xml:space="preserve"
+        xmlns:serif="http://www.serif.com/"
+        style="
+          fill-rule: evenodd;
+          clip-rule: evenodd;
+          stroke-linejoin: round;
+          stroke-miterlimit: 2;
+        "
+      >
+        <path
+          d="M18.75,1.499L18.75,9.749C18.75,14.306 14.719,17.999 9.75,17.999C4.781,17.999 0.75,14.306 0.75,9.749L0.75,1.499C0.75,1.499 0.75,1.499 0.75,1.499C0.75,1.087 1.089,0.749 1.5,0.749C1.699,0.749 1.89,0.828 2.031,0.969L4.087,3.337C7.456,0.893 12.044,0.893 15.412,3.337L17.469,0.971C17.61,0.83 17.801,0.751 18,0.751C18.411,0.751 18.749,1.088 18.75,1.499Z"
+          style="fill-opacity: 0.85; fill-rule: nonzero"
+        />
+        <path
+          d="M19.5,1.499L19.5,9.749C19.5,14.711 15.127,18.749 9.75,18.749C4.373,18.749 0,14.711 0,9.749L0,1.499C0,0.677 0.677,0 1.5,0C1.898,0 2.279,0.158 2.56,0.439C2.573,0.452 2.585,0.464 2.596,0.477L4.219,2.343C7.599,0.225 11.91,0.225 15.291,2.343L16.904,0.477C16.915,0.464 16.927,0.452 16.94,0.439C17.221,0.158 17.602,0 18,0C18.823,0 19.5,0.677 19.5,1.499ZM18,1.499L15.979,3.824C15.724,4.119 15.279,4.169 14.965,3.937C14.508,3.598 14.017,3.308 13.5,3.07L12,2.535C11.508,2.409 11.006,2.323 10.5,2.28L9,2.28C8.494,2.323 7.992,2.409 7.5,2.535L6,3.07C5.483,3.308 4.992,3.598 4.535,3.937C4.222,4.169 3.777,4.121 3.521,3.827L1.5,1.499L1.5,9.749C1.5,13.655 4.801,16.874 9,17.218L9,15.31L7.719,14.029C7.579,13.888 7.5,13.698 7.5,13.499C7.5,13.087 7.839,12.749 8.25,12.749C8.449,12.749 8.64,12.828 8.781,12.969L9.75,13.938L10.719,12.969C10.86,12.828 11.051,12.749 11.25,12.749C11.661,12.749 12,13.087 12,13.499C12,13.698 11.921,13.888 11.781,14.029L10.5,15.31L10.5,17.218C14.699,16.872 18,13.656 18,9.749L18,1.499Z"
+          style="fill-rule: nonzero"
+        />
+        <path
+          d="M6.75,8.994C6.75,9.611 6.242,10.119 5.625,10.119C5.008,10.119 4.5,9.611 4.5,8.994C4.5,8.377 5.008,7.869 5.625,7.869C6.242,7.869 6.75,8.377 6.75,8.994ZM13.875,7.869C13.258,7.869 12.75,8.377 12.75,8.994C12.75,9.611 13.258,10.119 13.875,10.119C14.492,10.119 15,9.611 15,8.994C15,8.377 14.492,7.869 13.875,7.869Z"
+          style="
+            fill-rule: nonzero;
+            stroke: rgb(255, 191, 0);
+            stroke-width: 0.53px;
+          "
+        />
+      </svg>
+    </div>
+  </footer>
+</html>
+
+<script>
+  function todoApp() {
+    return {
+      newTask: "",
+
+      tasks: Alpine.$persist([]),
+
+      get progress() {
+        const completed = this.tasks.filter((t) => t.done).length;
+
+        const progressValue =
+          this.tasks.length === 0
+            ? 0
+            : Math.round((completed / this.tasks.length) * 100);
+
+        if (progressValue >= 100) {
+          setTimeout(() => {
+            const rect = this.$refs.progress.getBoundingClientRect();
+
+            confetti({
+              startVelocity: 25,
+              spread: 360,
+              origin: {
+                x: (rect.x + rect.width / 2) / window.innerWidth,
+                y: (rect.top + rect.height / 2) / window.innerHeight,
+              },
+            });
+          }, 500);
+        }
+
+        return progressValue;
+      },
+
+      addTask() {
+        const text = this.newTask.trim();
+        if (!text) {
+          return;
+        }
+
+        this.tasks.push({
+          id: crypto.randomUUID(),
+          text,
+          done: false,
+          isEditing: false,
+        });
+
+        this.newTask = "";
+      },
+
+      removeTask(id) {
+        this.tasks = [...this.tasks.filter((t) => t.id !== id)];
+      },
+    };
+  }
+</script>
+
+<style>
+  [x-cloak] {
+    display: none !important;
+  }
+</style>
