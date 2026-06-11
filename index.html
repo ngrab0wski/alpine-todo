@@ -271,6 +271,8 @@
 
       tasks: Alpine.$persist([]),
 
+      lastProgress: -1,
+
       get progress() {
         const completed = this.tasks.filter((t) => t.done).length;
 
@@ -279,7 +281,11 @@
             ? 0
             : Math.round((completed / this.tasks.length) * 100);
 
-        if (progressValue >= 100) {
+        if (
+          this.lastProgress !== -1 &&
+          this.lastProgress < 100 &&
+          progressValue >= 100
+        ) {
           setTimeout(() => {
             const rect = this.$refs.progress.getBoundingClientRect();
 
@@ -293,6 +299,8 @@
             });
           }, 500);
         }
+
+        this.lastProgress = progressValue;
 
         return progressValue;
       },
