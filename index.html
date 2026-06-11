@@ -28,6 +28,10 @@
     ></script>
     <script
       defer
+      src="https://cdn.jsdelivr.net/npm/@alpinejs/sort@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script
+      defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
     <script
@@ -94,6 +98,7 @@
             <h2 class="place-self-center text-2xl font-bold py-3">ToDo</h2>
           </div>
           <ol
+            x-sort="moveTask"
             class="flex flex-col gap-2 flex-1 min-h-1 overflow-y-auto min-h-30"
           >
             <div
@@ -109,7 +114,10 @@
               </p>
             </div>
             <template x-for="task in tasks" :key="task.id">
-              <li class="flex items-center gap-2 group relative join">
+              <li
+                x-sort:item="task.id"
+                class="flex items-center gap-2 group relative join"
+              >
                 <div
                   class="flex-1 min-w-0 pr-20 has-[:checked]:opacity-50 transition-all"
                   x-show="!task.isEditing"
@@ -133,9 +141,11 @@
                   class="input input-sm flex-1 min-w-0 mr-18"
                   x-model="task.text"
                   x-show="task.isEditing"
+                  x-sort:ignore
                 />
 
                 <div
+                  x-sort:ignore
                   class="absolute right-0 hidden group-hover:flex"
                   :class="task.isEditing ? '!flex' : ''"
                 >
@@ -305,6 +315,16 @@
 
       removeTask(id) {
         this.tasks = [...this.tasks.filter((t) => t.id !== id)];
+      },
+
+      moveTask(itemId, newPosition) {
+        const prevIndex = this.tasks.findIndex((t) => t.id === itemId);
+        if (prevIndex === -1 || newPosition > this.tasks.length) {
+          return;
+        }
+
+        const [task] = this.tasks.splice(prevIndex, 1);
+        this.tasks.splice(newPosition - 1, 0, task);
       },
     };
   }
